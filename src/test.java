@@ -13,6 +13,8 @@ import javax.microedition.lcdui.game.LayerManager;
 import javax.microedition.lcdui.game.Sprite;
 import javax.microedition.lcdui.game.TiledLayer;
 
+import com.sun.perseus.j2d.Tile;
+
 /**
  * @author Ahmed
  */
@@ -38,6 +40,8 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 	private Image images[] = new Image[4];
 	private Image backgroundTilesImage = null;
 	private Sprite player;
+	private Sprite playerColBox;
+	
 	private Map backgroundLayer = null;
 	private LayerManager layerManager = null;
 
@@ -59,6 +63,7 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 
 		// create the orb sprite and add it to the layer manager
 		player = new Sprite(images[0], spriteWidth, spriteHeight);
+		playerColBox = new Sprite(images[0] ,spriteWidth,spriteHeight/2);
 		int seq[] = new int[50];
 		for (int i = 0; i < seq.length; i++) {
 			seq[i] = i / 5;
@@ -133,6 +138,7 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 			}
 			// update the sprite position and animation frame
 			player.setPosition(x, y);
+			playerColBox.setPosition(x, y+spriteHeight/2);
 			if (xx != x || yy != y) {
 				player.nextFrame();
 			}
@@ -146,7 +152,7 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 			// flush the graphics buffer (GameCanvas will take care of painting)
 			flushGraphics();
 
-			if (player.collidesWith(backgroundLayer, false)) {
+			if (playerColBox.collidesWith(backgroundLayer, false)) {
 				x = lastx;
 				y = lasty;
 			} else {
