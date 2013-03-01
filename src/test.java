@@ -46,7 +46,6 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 
         x = getWidth() / 2;
         y = getHeight() / 2;
-        ok = true;
         try {
             images[0] = Image.createImage("/1.png");
             images[1] = Image.createImage("/2.png");
@@ -54,11 +53,9 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
             images[3] = Image.createImage("/4.png");
             backgroundTilesImage = Image.createImage("/tile.png");
         } catch (Exception ioe) {
-            ok = false;
             System.out.println("unable to load image");
         }
         layerManager = new LayerManager();
-        if (ok) {
 
 
             // create the orb sprite and add it to the layer manager
@@ -74,7 +71,6 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
             // add the background layer as well
             backgroundLayer = new BackgroundLayer(backgroundTilesImage, getWidth(), getHeight());
             layerManager.append(backgroundLayer);
-        }
     }
 
     public void start() {
@@ -82,7 +78,6 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
         Thread t = new Thread(this);
         t.start();
     }
-    boolean ok;
     int direction = 0;
     int spriteWidth = 25, spriteHeight = 30;
     boolean init = true;
@@ -133,7 +128,6 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
             }
 
 
-            if (ok) {
                 if (direction != prevDir) {
                     player.setImage(images[direction], spriteWidth, spriteHeight);
 
@@ -142,7 +136,6 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
                 player.setPosition(x, y);
                 if (xx != x || yy != y) {
                     player.nextFrame();
-                }
             }
             // clear the display
             g.setColor(255, 255, 255);
