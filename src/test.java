@@ -40,8 +40,7 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 	private Image images[] = new Image[4];
 	private Image backgroundTilesImage = null;
 	private Sprite player;
-	private Sprite playerColBox;
-	
+
 	private Map backgroundLayer = null;
 	private LayerManager layerManager = null;
 
@@ -63,7 +62,7 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 
 		// create the orb sprite and add it to the layer manager
 		player = new Sprite(images[0], spriteWidth, spriteHeight);
-		playerColBox = new Sprite(images[0] ,spriteWidth,spriteHeight/2);
+		
 		int seq[] = new int[50];
 		for (int i = 0; i < seq.length; i++) {
 			seq[i] = i / 5;
@@ -89,6 +88,7 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 	boolean init = true;
 	int lastx = 0, lasty = 0;
 	int speed = 2;
+
 	public void run() {
 		Graphics g = getGraphics();
 
@@ -99,16 +99,16 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 			int xx = x, yy = y;
 
 			if ((keyStates & LEFT_PRESSED) != 0) {
-				x-=speed;
+				x -= speed;
 				direction = 3;
 			} else if ((keyStates & RIGHT_PRESSED) != 0) {
-				x+=speed;
+				x += speed;
 				direction = 1;
 			} else if ((keyStates & UP_PRESSED) != 0) {
-				y-=speed;
+				y -= speed;
 				direction = 2;
 			} else if ((keyStates & DOWN_PRESSED) != 0) {
-				y+=speed;
+				y += speed;
 				direction = 0;
 			}
 
@@ -138,7 +138,6 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 			}
 			// update the sprite position and animation frame
 			player.setPosition(x, y);
-			playerColBox.setPosition(x, y+spriteHeight/2);
 			if (xx != x || yy != y) {
 				player.nextFrame();
 			}
@@ -151,8 +150,8 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 
 			// flush the graphics buffer (GameCanvas will take care of painting)
 			flushGraphics();
-
-			if (playerColBox.collidesWith(backgroundLayer, false)) {
+			player.defineCollisionRectangle(5, spriteHeight/2, spriteWidth-10, spriteHeight/2);
+			if (player.collidesWith(backgroundLayer, false)) {
 				x = lastx;
 				y = lasty;
 			} else {
