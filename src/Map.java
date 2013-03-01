@@ -41,7 +41,7 @@ public class Map extends TiledLayer {
 				if (i % 2 == 1 && j % 2 == 1) {
 					map[i][j] = nonbreak;
 				} else {
-					if (r.nextInt() > -1000000) {
+					if (r.nextInt() > 1000000000) {
 						map[i][j] = breakable;
 					} else {
 						map[i][j] = 0;
