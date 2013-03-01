@@ -52,7 +52,7 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
             images[1] = Image.createImage("/2.png");
             images[2] = Image.createImage("/3.png");
             images[3] = Image.createImage("/4.png");
-            backgroundTilesImage = Image.createImage("/front.png");
+            backgroundTilesImage = Image.createImage("/tile.png");
         } catch (Exception ioe) {
             ok = false;
             System.out.println("unable to load image");
@@ -84,9 +84,10 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
     }
     boolean ok;
     int direction = 0;
-    int spriteWidth = 25,spriteHeight = 30;
-            
-            
+    int spriteWidth = 25, spriteHeight = 30;
+    boolean init = true;
+    int lastx = 35, lasty = 35;
+
     public void run() {
         Graphics g = getGraphics();
 
@@ -115,6 +116,13 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
             }
             if (x > getWidth()) {
                 x = 0;
+            }
+
+
+            if (init) {
+                x = 35;
+                y = 35;
+                init = false;
             }
 
             if (y < 0) {
@@ -146,6 +154,15 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
             // flush the graphics buffer (GameCanvas will take care of painting)
             flushGraphics();
 
+            if (player.collidesWith(backgroundLayer, false)) {
+                x = lastx;
+                y = lasty;
+            } else {
+                lastx = x;
+                lasty = y;
+            }
+
+
             // sleep a little
             try {
                 Thread.sleep(5);
@@ -159,25 +176,26 @@ class AnotherGameCanvas extends GameCanvas implements Runnable {
 class BackgroundLayer extends TiledLayer {
 
     private static final int HORIZONTAL = 1;
-    private static final int VERTICAL = 2;
-    private static final int CROSS = 3;
+    private static final int VERTICAL = 1;
+    private static final int CROSS = 1;
 
     public BackgroundLayer(Image tiles, int width, int height) {
-        super(20, 20, tiles, 20, 30);
+        super(width / tiles.getWidth(), height / tiles.getHeight(), tiles, tiles.getWidth(), tiles.getWidth());
+        int rows = height / tiles.getHeight(), cols = width / tiles.getWidth();
+        int boxes = 2;
         // draw horizontal lines
-        for (int y = 0; y < height / getCellHeight(); y += 3) {
-            System.out.println(y);
-            fillCells(0, y, width / getCellWidth() - 2, 1, HORIZONTAL);
+        for (int j = 0; j < rows; j += rows/boxes) {
+            fillCells(0, j, cols, 1, HORIZONTAL);
         }
 
         // draw vertical lines
-        for (int x = 0; x < 20; x += 5) {
-            fillCells(x, 0, 1, 19, VERTICAL);
+        for (int x = 0; x < cols; x += cols/boxes) {
+            fillCells(x, 0, 1, rows, VERTICAL);
         }
 
         // fill in the cross pieces
-        for (int y = 0; y < 20; y += 5) {
-            for (int x = 0; x < 20; x += 5) {
+        for (int y = 0; y < rows; y += rows/boxes) {
+            for (int x = 0; x < cols; x += cols/boxes) {
                 setCell(x, y, CROSS);
             }
         }
