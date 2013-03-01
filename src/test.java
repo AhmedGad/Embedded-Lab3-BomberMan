@@ -11,6 +11,7 @@ import javax.microedition.midlet.*;
 public class test extends MIDlet {
 
     public void startApp() {
+    	System.out.println("YES :P");
     }
     
     public void pauseApp() {
