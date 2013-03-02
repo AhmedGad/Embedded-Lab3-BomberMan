@@ -7,8 +7,6 @@ public class Main extends MIDlet
     public Main()
     {
     }
-    
-    
 
     public void startApp()
     {

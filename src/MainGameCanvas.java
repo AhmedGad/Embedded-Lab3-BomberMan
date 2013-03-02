@@ -1,5 +1,3 @@
-import java.io.IOException;
-
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.GameCanvas;
@@ -9,8 +7,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 
 	private boolean running;
 	private Player player;
-	private Monster[] mobs;
-	public static Map backgroundLayer;
+	private Map backgroundLayer;
 	private LayerManager layerManager;
 	private Image backgroundTilesImage;
 	int direction = 0;
@@ -18,8 +15,6 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 	boolean init;
 	int lastx = 0, lasty = 0;
 	int speed;
-	int width = 10;
-	int height = 10;
 
 	public MainGameCanvas() {
 		super(true);
@@ -34,27 +29,10 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 		} catch (Exception ioe) {
 			System.out.println("unable to load image");
 		}
-		backgroundLayer = new Map(backgroundTilesImage, width, height);
-		addMonsters(5);
+		backgroundLayer = new Map(backgroundTilesImage, 16, 16, 1);
 		layerManager.append(backgroundLayer);
-		b = new Bomb(player.getX(), player.getY(), 6);
-		layerManager.append(b.getBomb());
-//		layerManager.setViewWindow(0, 0, getWidth(), getHeight());
-	}
 
-	public void addMonsters(int NumOfMonsters) {
-		mobs = new Monster[NumOfMonsters];
-		int cnt = 0;
-		for (int i = 0; i < width && cnt < NumOfMonsters; i++) {
-			for (int j = 0; j < height && cnt < NumOfMonsters; j++) {
-				if (i < 4 && j < 4)
-					continue;
-				if (backgroundLayer.isFreeCell(i, j)) {
-					mobs[cnt] = new Monster(i * 30, j * 30);
-					layerManager.append(mobs[cnt++].getMonster());
-				}
-			}
-		}
+		layerManager.setViewWindow(0, 0, getWidth(), getHeight());
 	}
 
 	public void start() {
@@ -67,7 +45,6 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 	final int LEFT = 3;
 	final int UP = 0;
 	final int DOWN = 2;
-	Bomb b;
 
 	public void run() {
 		Graphics g = getGraphics();
@@ -88,11 +65,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 				dy += speed;
 				direction = UP;
 			}
-			if ((keyStates & GAME_A_PRESSED) != 0) {
-				
-			}
-			if (b != null)
-				b.tick();
+
 			player.changeDirection(direction);
 			g.setColor(255, 255, 255);
 			g.fillRect(0, 0, getWidth(), getHeight());
@@ -124,15 +97,12 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 				dy1 = -dy;
 				movePlayer = false;
 			}
-			for (int i = 0; i < mobs.length; i++)
-				mobs[i].move();
+
 			if (movePlayer) {
 				player.moveWith(dx, dy);
-			} else if (dx != 0 || dy != 0) {
+			} else {
 				player.getPlayer().nextFrame();
 			}
-			if (dx == dy && dx == 0)
-				player.getPlayer().setFrame(0);
 
 			if (player.collidesWith(backgroundLayer)) {
 				if (movePlayer)
