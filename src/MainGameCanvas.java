@@ -29,7 +29,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 		} catch (Exception ioe) {
 			System.out.println("unable to load image");
 		}
-		backgroundLayer = new Map(backgroundTilesImage, 16, 16, 1);
+		backgroundLayer = new Map(backgroundTilesImage, 14, 14, 1);
 		layerManager.append(backgroundLayer);
 
 		layerManager.setViewWindow(0, 0, getWidth(), getHeight());
@@ -100,10 +100,12 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 
 			if (movePlayer) {
 				player.moveWith(dx, dy);
-			} else {
+			} else if(dx!=0||dy!=0){
 				player.getPlayer().nextFrame();
 			}
-
+			if(dx == dy &&dx==0)
+				player.getPlayer().setFrame(0);
+			
 			if (player.collidesWith(backgroundLayer)) {
 				if (movePlayer)
 					player.setPosition(lastx, lasty);
