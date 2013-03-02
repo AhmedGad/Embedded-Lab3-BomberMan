@@ -31,8 +31,10 @@ public class MainGameCanvas extends GameCanvas
         } catch (Exception ioe) {
             System.out.println("unable to load image");
         }
-        backgroundLayer = new Map(backgroundTilesImage, 100, 100, 1);
+        backgroundLayer = new Map(backgroundTilesImage, 12, 12, 1);
         layerManager.append(backgroundLayer);
+
+        layerManager.setViewWindow(0, 0, getWidth(), getHeight());
     }
 
     public void start() {
@@ -40,6 +42,10 @@ public class MainGameCanvas extends GameCanvas
         Thread t = new Thread(this);
         t.start();
     }
+    final int RIGHT = 1;
+    final int LEFT = 3;
+    final int UP = 0;
+    final int DOWN = 2;
 
     public void run() {
         Graphics g = getGraphics();
@@ -49,26 +55,47 @@ public class MainGameCanvas extends GameCanvas
             int dy = 0;
             if ((keyStates & 4) != 0) {
                 dx -= speed;
-                direction = 3;
+                direction = LEFT;
             } else if ((keyStates & 0x20) != 0) {
                 dx += speed;
-                direction = 1;
+                direction = RIGHT;
             } else if ((keyStates & 2) != 0) {
                 dy -= speed;
-                direction = 2;
+                direction = DOWN;
             } else if ((keyStates & 0x40) != 0) {
                 dy += speed;
-                direction = 0;
+                direction = UP;
             }
 
             player.changeDirection(direction);
-            player.moveWith(dx, dy);
             g.setColor(255, 255, 255);
             g.fillRect(0, 0, getWidth(), getHeight());
             layerManager.paint(g, 0, 0);
             flushGraphics();
 
-            if (player.collidesWith(backgroundLayer)) {
+            boolean movePlayer = true;
+
+            int halfW = getWidth() / 2;
+            int halfH = getHeight() / 2;
+
+            if ((player.getX() > halfW && (direction == RIGHT && backgroundLayer.getWidth() - player.getX() + backgroundLayer.getX() > halfW) || (player.getX() < halfW && direction == LEFT && (player.getX() - backgroundLayer.getX()) > halfW))) {
+                backgroundLayer.move(-dx, 0);
+                movePlayer = false;
+            } else if ((player.getY() > halfH && (direction == UP && backgroundLayer.getHeight() - player.getY() + backgroundLayer.getY() > halfH) || (player.getY() < halfH && direction == DOWN && (player.getY() - backgroundLayer.getY()) > halfH))) {
+                backgroundLayer.move(0, -dy);
+                movePlayer = false;
+            }
+
+
+
+
+            if (movePlayer) {
+                player.moveWith(dx, dy);
+            } else {
+                player.getPlayer().nextFrame();
+            }
+
+            if (player.collidesWith(backgroundLayer) && false) {
                 player.setPosition(lastx, lasty);
             } else {
                 lastx = player.getX();

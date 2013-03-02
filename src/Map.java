@@ -10,11 +10,14 @@ public class Map extends TiledLayer {
     private static Random r = new Random();
     private int[][] map;
     private int maxMobs; // maximum number of monsters for this level
+    private int x, y;
 
     public Map(Image tiles, int width, int height, int level) {
         super(width, height, tiles,
                 tiles.getWidth() / 2, tiles.getHeight());
-
+        
+        x = y = 0;
+        
         map = new int[width][height];
         // make number of mobs depend on the size too?!
         maxMobs = level * 4;
@@ -49,6 +52,12 @@ public class Map extends TiledLayer {
                 }
             }
         }
+    }
+
+    public void move(int dx, int dy) {
+        x+=dx;
+        y+=dy;
+        super.setPosition(x, y);
     }
 
     public boolean clearCell(int i, int j) {
