@@ -2,7 +2,6 @@ import java.util.Random;
 
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.Layer;
-import javax.microedition.m3g.Background;
 
 public class Monster {
 	private int x, y;

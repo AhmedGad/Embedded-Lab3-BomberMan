@@ -60,7 +60,9 @@ public class Map extends TiledLayer {
 	}
 
 	public boolean clearCell(int i, int j) {
-		if (map[i][j] == breakable) {
+		if (i >= 0 && j >= 0 && i < map.length && j < map[0].length
+				&& map[i][j] != nonbreak) {
+			setCell(i, j, 0);
 			map[i][j] = 0;
 			return true;
 		} else {
