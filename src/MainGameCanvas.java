@@ -3,11 +3,11 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.lcdui.game.LayerManager;
 
-public class AnotherGameCanvas extends GameCanvas
+public class MainGameCanvas extends GameCanvas
     implements Runnable
 {
 
-    public AnotherGameCanvas()
+    public MainGameCanvas()
     {
         super(true);
         backgroundLayer = null;
