@@ -25,7 +25,7 @@ public class Player {
 
         int spriteWidth = 25;
         int spriteHeight = 30;
-        player = new Character(images, seq, spriteWidth, spriteHeight);
+        player = new Character(images, seq, spriteWidth, spriteHeight, 35, 35);
 
         player.defineCollisionRectangle(5, spriteHeight / 2, spriteWidth - 10, spriteHeight / 2);
     }

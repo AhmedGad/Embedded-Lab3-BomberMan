@@ -14,6 +14,7 @@ public class Map extends TiledLayer {
     public Map(Image tiles, int width, int height, int level) {
         super(width, height, tiles,
                 tiles.getWidth() / 2, tiles.getHeight());
+
         map = new int[width][height];
         // make number of mobs depend on the size too?!
         maxMobs = level * 4;
@@ -32,12 +33,12 @@ public class Map extends TiledLayer {
     private void fillMap() {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[0].length; j++) {
-                if (i == 0 && j == 0) {
+                if (j == 0 || j == map[0].length - 1 || i == 0 || i == map.length - 1) {
+                    map[i][j] = nonbreak;
+                } else if (i < 3 && j < 3) {
                     // starting cell
                     map[i][j] = 0;
-                    continue;
-                }
-                if (i % 2 == 1 && j % 2 == 1) {
+                } else if (i % 2 == 1 && j % 2 == 1) {
                     map[i][j] = nonbreak;
                 } else {
                     if (r.nextInt() > 1000000000) {
