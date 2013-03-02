@@ -1,37 +1,57 @@
+import java.io.IOException;
 
+import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.Sprite;
 
-public class Bomb implements Runnable {
+public class Bomb {
 
-    private int x, y, time; // time is the number of cycles (Thread sleeps)
-    // before exploding
-    private Sprite Bomb;
+	private int x, y, time; // time is the number of cycles (Thread sleeps)
+	private int cyclesPerImage = 10;
+	private int cntCycles = 0;
+	private Sprite bomb;
+	private int spriteWidth = 20;
+	private int spriteHeight = 25;
+	private boolean active;
 
-    public Bomb(int x, int y, int time) {
-        super();
-        this.x = x;
-        this.y = y;
-        this.time = time;
-        new Thread(this).start();
-    }
+	public Bomb(int x, int y, int time) {
+		this.x = x;
+		this.y = y;
+		this.time = time;
+		Image imgs[] = new Image[2];
+		try {
+			imgs[0] = Image.createImage("/b1.png");
+			imgs[1] = Image.createImage("/b2.png");
+		} catch (IOException e) {
 
-    private void explode() {
-    }
+		}
+		bomb = new Sprite(imgs[0], spriteWidth, spriteHeight);
+		bomb.setFrameSequence(new int[] { 0, 1, 2, 3, 4, 5 });
+		bomb.setPosition(x, y);
+		active = true;
+	}
 
-    public void run() {
-        while (true) {
-            if (time == 0) {
-                explode();
-                break;
-            }
+	public Sprite getBomb() {
+		return bomb;
+	}
 
-            time--;
+	private void explode() {
 
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+		active = false;
+	}
+
+	public void tick() {
+		if (!active) {
+			return;
+		}
+		cntCycles++;
+		System.out.println(cntCycles);
+		if (cntCycles % cyclesPerImage == 0) {
+			time--;
+//			bomb.setPosition(bomb.getX()+1, bomb.getY());
+			bomb.nextFrame();
+			cntCycles = 0;
+		}
+//		if (time == 0)
+//			explode();
+	}
 }
