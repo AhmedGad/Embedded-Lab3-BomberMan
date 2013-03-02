@@ -79,7 +79,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     final int LEFT = 3;
     final int UP = 0;
     final int DOWN = 2;
-    private int mobSlow = 5, mobCnt = 0;
+    private int mobSlowness = 3, mobCnt = 0;
 
     public void run() {
         Graphics g = getGraphics();
@@ -135,7 +135,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
             }
             mobCnt++;
 
-            if (mobCnt % mobSlow == 0) {
+            if (mobCnt % mobSlowness == 0) {
                 for (int i = 0; i < mobs.length; i++) {
                     mobs[i].move();
                 }
@@ -176,6 +176,6 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
         for (int i = 0; i < mobs.length; i++) {
             mobs[i].move(dx, dy);
         }
-//        b.move(dx, dy);
+        bp.GetBomb().move(dx, dy);
     }
 }
