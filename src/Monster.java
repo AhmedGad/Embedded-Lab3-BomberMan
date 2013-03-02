@@ -53,9 +53,7 @@ public class Monster {
 	}
 
 	public void move(int dx, int dy) {
-
 		monster.setPosition(x + dx, y + dy);
-
 		if (!collidesWith(MainGameCanvas.backgroundLayer)) {
 			x += dx;
 			y += dy;
