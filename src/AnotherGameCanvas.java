@@ -30,7 +30,7 @@ public class AnotherGameCanvas extends GameCanvas
         {
             System.out.println("unable to load image");
         }
-        backgroundLayer = new Map(backgroundTilesImage, 20, 20, 1);
+        backgroundLayer = new Map(backgroundTilesImage, 100, 100, 1);
         layerManager.append(backgroundLayer);
     }
 

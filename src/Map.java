@@ -1,7 +1,7 @@
 import java.util.Random;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.TiledLayer;
-import com.sun.midp.io.j2me.storage.File;
+
 
 public class Map extends TiledLayer {
 	public static final int breakable = 1;
@@ -11,9 +11,9 @@ public class Map extends TiledLayer {
 	private int maxMobs; // maximum number of monsters for this level
 
 	public Map(Image tiles, int width, int height, int level) {
-		super(width / (tiles.getWidth()/2), height / tiles.getHeight(), tiles,
+		super(width, height, tiles,
 				tiles.getWidth()/2, tiles.getHeight());
-		map = new int[width / (tiles.getWidth()/2)][height / tiles.getHeight()];
+		map = new int[width][height];
 		// make number of mobs depend on the size too?!
 		maxMobs = level * 4;
 
