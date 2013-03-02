@@ -20,8 +20,8 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     boolean init;
     int lastx = 0, lasty = 0;
     int speed;
-    int width = 10;
-    int height = 10;
+    int width = 14;
+    int height = 14;
     int numberOfBombs;
     BombPool bp;
 
@@ -148,7 +148,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                 player.getPlayer().setFrame(0);
             }
 
-            if (false && player.collidesWith(backgroundLayer)) {
+            if (player.collidesWith(backgroundLayer)) {
 
                 if (movePlayer) {
                     player.setPosition(lastx, lasty);
