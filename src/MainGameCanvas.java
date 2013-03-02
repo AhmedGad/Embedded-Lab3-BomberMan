@@ -20,8 +20,8 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     boolean init;
     int lastx = 0, lasty = 0;
     int speed;
-    int width = 10;
-    int height = 10;
+    int width = 15;
+    int height = 15;
     int numberOfBombs;
     BombPool bp;
 
@@ -79,6 +79,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     final int LEFT = 3;
     final int UP = 0;
     final int DOWN = 2;
+    private int mobSlow = 5, mobCnt = 0;
 
     public void run() {
         Graphics g = getGraphics();
@@ -132,10 +133,13 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                 dy1 = -dy;
                 movePlayer = false;
             }
+            mobCnt++;
 
-
-            for (int i = 0; i < mobs.length; i++) {
-                mobs[i].move();
+            if (mobCnt % mobSlow == 0) {
+                for (int i = 0; i < mobs.length; i++) {
+                    mobs[i].move();
+                }
+                mobCnt %= 10000;
             }
 
             if (movePlayer) {
@@ -148,7 +152,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                 player.getPlayer().setFrame(0);
             }
 
-            if (false && player.collidesWith(backgroundLayer)) {
+            if (player.collidesWith(backgroundLayer)) {
 
                 if (movePlayer) {
                     player.setPosition(lastx, lasty);
@@ -168,13 +172,10 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     }
 
     private void moveBckGrnd(int dx, int dy) {
-
         backgroundLayer.move(dx, dy);
-
         for (int i = 0; i < mobs.length; i++) {
             mobs[i].move(dx, dy);
         }
-
 //        b.move(dx, dy);
     }
 }

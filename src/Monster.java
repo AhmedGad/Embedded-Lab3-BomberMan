@@ -55,9 +55,7 @@ public class Monster {
     }
 
     public void move(int dx, int dy) {
-
         monster.setPosition(x + dx, y + dy);
-
         if (!collidesWith(MainGameCanvas.backgroundLayer)) {
             x += dx;
             y += dy;
@@ -65,6 +63,7 @@ public class Monster {
             monster.setPosition(x - dx, y - dy);
         }
     }
+    
     private int[] dx = {1, -1, 0, 0};
     private int[] dy = {0, 0, 1, -1};
     boolean moved;
@@ -84,9 +83,10 @@ public class Monster {
                     / (1.0 * Integer.MAX_VALUE - Integer.MIN_VALUE);
             if (p > 0.999) {
                 dir = getNextDir();
+            } else {
+                x += dx[dir];
+                y += dy[dir];
             }
-            x += dx[dir];
-            y += dy[dir];
         }
 
     }
