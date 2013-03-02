@@ -1,6 +1,9 @@
 
+import java.io.IOException;
+
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.Ticker;
 import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.lcdui.game.LayerManager;
 
@@ -19,9 +22,12 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     int speed;
     int width = 10;
     int height = 10;
+    int numberOfBombs;
+    BombPool bp;
 
-    public MainGameCanvas() {
+    public MainGameCanvas(int numberOfBombs) {
         super(true);
+        this.numberOfBombs = numberOfBombs;
         init = true;
         speed = 1;
 
@@ -35,10 +41,17 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
         }
         backgroundLayer = new Map(backgroundTilesImage, width, height);
         addMonsters(5);
+        bp = new BombPool(numberOfBombs);
+        for (int i = 0; i < numberOfBombs; i++) {
+            Bomb b = bp.GetBomb();
+            for (int j = 0; j < 5; j++) {
+                layerManager.append(b.getArray()[j]);
+            }
+            bp.release(b);
+        }
         layerManager.append(backgroundLayer);
-        b = new Bomb(player.getX(), player.getY(), 6);
-//		layerManager.append(b.getBomb());
-//		layerManager.setViewWindow(0, 0, getWidth(), getHeight());
+
+        // layerManager.setViewWindow(0, 0, getWidth(), getHeight());
     }
 
     public void addMonsters(int NumOfMonsters) {
@@ -66,7 +79,6 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     final int LEFT = 3;
     final int UP = 0;
     final int DOWN = 2;
-    Bomb b;
 
     public void run() {
         Graphics g = getGraphics();
@@ -87,13 +99,12 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                 dy += speed;
                 direction = UP;
             }
-            if ((keyStates & GAME_A_PRESSED) != 0) {
-                b.getBomb().setPosition(player.getX(), player.getY());
-                layerManager.append(b.getBomb());
+            if ((keyStates & GAME_A_PRESSED) != 0 && bp.canGetBomb()) {
+                Bomb b = bp.GetBomb();
+                b.initBomb(player.getX() + spriteWidth / 2, player.getY()
+                        + spriteHeight / 2, 6);
             }
-            if (b != null) {
-                b.tick();
-            }
+            bp.tickAllTaken();
             player.changeDirection(direction);
             g.setColor(255, 255, 255);
             g.fillRect(0, 0, getWidth(), getHeight());
@@ -138,13 +149,13 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
             }
 
             if (false && player.collidesWith(backgroundLayer)) {
-                
+
                 if (movePlayer) {
                     player.setPosition(lastx, lasty);
                 } else {
                     moveBckGrnd(-dx1, -dy1);
                 }
-                
+
             } else {
                 lastx = player.getX();
                 lasty = player.getY();
@@ -164,6 +175,6 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
             mobs[i].move(dx, dy);
         }
 
-        b.getBomb().move(dx, dy);
+//        b.move(dx, dy);
     }
 }
