@@ -1,4 +1,5 @@
 
+import java.util.Random;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
@@ -8,8 +9,8 @@ import javax.microedition.lcdui.game.LayerManager;
 public class MainGameCanvas extends GameCanvas implements Runnable {
 
     public boolean running;
-    private Player player;
-    private Monster[] mobs;
+    public static Player player;
+    public static Monster[] mobs;
     public static Map backgroundLayer;
     private LayerManager layerManager;
     private Image backgroundTilesImage;
@@ -25,6 +26,8 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
 
     public MainGameCanvas(int numberOfBombs) {
         super(true);
+
+        generateEquation();
         this.numberOfBombs = numberOfBombs;
         init = true;
         speed = 1;
@@ -49,7 +52,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
         bp.release();
         layerManager.append(backgroundLayer);
 
-        layerManager.setViewWindow(0, -20, getWidth(), getHeight());
+        // layerManager.setViewWindow(0, 0, getWidth(), getHeight());
     }
 
     public void addMonsters(int NumOfMonsters) {
@@ -84,6 +87,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     public void run() {
         Graphics g = getGraphics();
         while (running) {
+            dead = player.dead;
             if (!dead) {
                 int keyStates = getKeyStates();
                 int dx = 0;
@@ -103,7 +107,8 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                 }
                 cnt++;
                 if ((keyStates & GAME_A_PRESSED) != 0
-                        && bp.canGetBomb(player.getX(), player.getY())) {
+                        && bp.canGetBomb(player.getX() + spriteWidth / 2,
+                        player.getY() + spriteHeight / 2)) {
                     System.out.println("X");
                     Bomb b = bp.GetBomb();
                     b.initBomb(player.getX() + spriteWidth / 2, player.getY()
@@ -165,7 +170,8 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                 }
 
                 for (int i = 0; i < mobs.length; i++) {
-                    if (player.collidesWith(mobs[i].getMonster())) {
+                    if (mobs[i].getMonster().isVisible()
+                            && player.collidesWith(mobs[i].getMonster())) {
                         player.die();
                         dead = true;
                     }
@@ -179,7 +185,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
             g.setColor(255, 255, 255);
             g.fillRect(0, 0, getWidth(), getHeight());
             setHeader(g);
-            layerManager.paint(g, 0, 0);
+            layerManager.paint(g, 0, 20);
             flushGraphics();
 
             try {
@@ -187,6 +193,41 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
             } catch (InterruptedException ie) {
             }
         }
+    }
+    int score, spirit, winDigit;
+    String eq;
+
+    void generateEquation() {
+        Random r = new Random(1L << 60);
+        int d1 = r.nextInt(10), d2 = r.nextInt(10), d3 = r.nextInt(10), d4 = r.nextInt(10);
+        while (d1 == 0) {
+            d1 = r.nextInt(10);
+        }
+        while (d3 == 0) {
+            d3 = r.nextInt(10);
+        }
+        String op = "+-*";
+        char oper = op.charAt(r.nextInt(3));
+        int n1 = d1 * 10 + d2, n2 = d3 * 10 + d4;
+        String tmp = n1 + "" + oper + ""
+                + n2 + "=";
+        int res = 0;
+        if (oper == '+') {
+            res = n1 + n2;
+        } else if (oper == '-') {
+            res = n1 - n2;
+        } else if (oper == '*') {
+            res = n1 * n2;
+        }
+        tmp += res;
+        int hide = r.nextInt(5);
+        while (hide == 2) {
+            hide = r.nextInt(5);
+        }
+        char[] arr = tmp.toCharArray();
+        winDigit = arr[hide] - '0';
+        arr[hide] = '?';
+        eq = new String(arr);
     }
 
     private void moveBckGrnd(int dx, int dy) {
@@ -203,6 +244,6 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
         g.fillRect(0, 0, getWidth(), 20);
         g.setColor(165, 176, 100);
         g.setFont(Font.getFont(Font.FACE_MONOSPACE, Font.STYLE_BOLD | Font.STYLE_UNDERLINED | Font.STYLE_ITALIC, Font.SIZE_LARGE));
-        g.drawString("TEST", 0, 0, 0);
+        g.drawString("SC:" + score + " " + eq + " " + "SP:" + spirit, 0, 0, 0);
     }
 }

@@ -1,6 +1,7 @@
 import java.io.IOException;
 
 import javax.microedition.lcdui.Image;
+import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.lcdui.game.Sprite;
 
 public class Bomb {
@@ -67,19 +68,31 @@ public class Bomb {
 		int px = (xi - sx) / 30;
 		int py = (yi - sy) / 30;
 
-//		System.out.println(bomb[0].getX());
-//		System.out.println(MainGameCanvas.backgroundLayer.getX());
-
+		Monster[] mobs = MainGameCanvas.mobs;
 		for (int i = 0; i < 4; i++) {
 			int nx = px + dx[i];
 			int ny = py + dy[i];
 			if (MainGameCanvas.backgroundLayer.clearCell(nx, ny)) {
-				bomb[1 + i].setPosition(bomb[0].getX() + dx[i] * 30,
+				bomb[i + 1].setPosition(bomb[0].getX() + dx[i] * 30,
 						bomb[0].getY() + dy[i] * 30);
+				for (int j = 0; j < mobs.length; j++) {
+					if (mobs[j].getMonster().collidesWith(bomb[i + 1])) {
+						mobs[j].getMonster().setVisible(false);
+					}
+				}
+				if (MainGameCanvas.player.collidesWith(bomb[i + 1]))
+					MainGameCanvas.player.die();
 			} else {
-				bomb[1 + i].setVisible(false);
+				bomb[i + 1].setVisible(false);
 			}
 		}
+		for (int j = 0; j < mobs.length; j++) {
+			if (mobs[j].getMonster().collidesWith(bomb[0])) {
+				mobs[j].getMonster().setVisible(false);
+			}
+		}
+		if (MainGameCanvas.player.collidesWith(bomb[0]))
+			MainGameCanvas.player.die();
 	}
 
 	boolean done;

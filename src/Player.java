@@ -28,7 +28,8 @@ public class Player {
         int spriteHeight = 30;
         player = new Character(images, seq, spriteWidth, spriteHeight, 35, 35);
 
-        player.defineCollisionRectangle(5, spriteHeight / 2, spriteWidth - 10, spriteHeight / 2);
+        player.defineCollisionRectangle(5, spriteHeight / 2, spriteWidth - 10,
+                spriteHeight / 2);
 
         dead = false;
         deadCnt = 0;
@@ -65,7 +66,6 @@ public class Player {
     public void callIfDie() {
         if (player.getFrame() < 8) {
             deadCnt++;
-            System.out.println(deadCnt);
             if (deadCnt % 50 == 0) {
                 player.nextFrame();
             }

@@ -11,9 +11,20 @@ public class BombPool {
 		available = size;
 	}
 
-	public boolean canGetBomb() {
-		System.out.println(available);
-		return available > 0;
+	public boolean canGetBomb(int x, int y) {
+		if (available <= 0)
+			return false;
+		x /= 30;
+		y /= 30;
+		for (int i = 0; i < pool.length; i++) {
+			if (taken[i]) {
+				if (pool[i].getArray()[0].getX() / 30 == x
+						&& pool[i].getArray()[0].getY() / 30 == y)
+					
+					return false;
+			}
+		}
+		return true;
 	}
 
 	public Bomb GetBomb() {
