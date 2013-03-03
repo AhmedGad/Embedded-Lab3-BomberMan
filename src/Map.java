@@ -6,8 +6,8 @@ public class Map extends TiledLayer {
 
 	public static final int breakable = 1;
 	public static final int nonbreak = 2;
-	private static Random r = new Random();
-	private int[][] map;
+	private static Random r = new Random(System.currentTimeMillis());
+	public int[][] map;
 	// private int maxMobs; // maximum number of monsters for this level
 	private int x, y;
 

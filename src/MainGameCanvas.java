@@ -1,10 +1,13 @@
 
+import java.io.IOException;
 import java.util.Random;
+import java.util.Vector;
 import javax.microedition.lcdui.Font;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.lcdui.game.LayerManager;
+import javax.microedition.lcdui.game.Sprite;
 
 public class MainGameCanvas extends GameCanvas implements Runnable {
 
@@ -23,17 +26,31 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     int height = 14;
     int numberOfBombs;
     BombPool bp;
+    Digits d[];
+    Sprite winner;
+    int lev;
+    int wrongCnt = 0;
 
-    public MainGameCanvas(int numberOfBombs) {
+    public MainGameCanvas(int lev) throws IOException {
         super(true);
-
+        this.lev = lev;
+        if (lev == 1) {
+            spirit = 3;
+            score = 0;
+        }
+        mobSlowness = 4 - lev;
         generateEquation();
-        this.numberOfBombs = numberOfBombs;
+        this.numberOfBombs = lev;
         init = true;
         speed = 1;
 
+        winner = new Sprite(Image.createImage("/winner.png"), 90, 62);
+
         layerManager = new LayerManager();
-        player = new Player();
+        layerManager.append(winner);
+        winner.setVisible(false);
+
+        player = new Player(lev);
         layerManager.append(player.getPlayer());
         try {
             backgroundTilesImage = Image.createImage("/tiles.png");
@@ -41,19 +58,21 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
             System.out.println("unable to load image");
         }
         backgroundLayer = new Map(backgroundTilesImage, width, height);
-        addMonsters(5);
-        bp = new BombPool(numberOfBombs);
-        for (int i = 0; i < numberOfBombs; i++) {
+        addMonsters(lev == 1 ? 5 : lev == 2 ? 7 : 10);
+        bp = new BombPool(lev);
+        for (int i = 0; i < lev; i++) {
             Bomb b = bp.GetBomb();
             for (int j = 0; j < 5; j++) {
                 layerManager.append(b.getArray()[j]);
             }
         }
         bp.release();
-        layerManager.append(backgroundLayer);
 
-        // layerManager.setViewWindow(0, 0, getWidth(), getHeight());
+        layerManager.append(backgroundLayer);
+        addDigits();
+
     }
+    Main main;
 
     public void addMonsters(int NumOfMonsters) {
         mobs = new Monster[NumOfMonsters];
@@ -71,7 +90,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
         }
     }
 
-    public void start() {
+    public void start() throws IOException {
         running = true;
         Thread t = new Thread(this);
         t.start();
@@ -80,7 +99,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
     final int LEFT = 3;
     final int UP = 0;
     final int DOWN = 2;
-    private int mobSlowness = 3, mobCnt = 0;
+    private int mobSlowness = 4, mobCnt = 0;
     boolean dead = false;
     static int cnt = 0;
 
@@ -109,36 +128,45 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                 if ((keyStates & GAME_A_PRESSED) != 0
                         && bp.canGetBomb(player.getX() + spriteWidth / 2,
                         player.getY() + spriteHeight / 2)) {
-                    System.out.println("X");
                     Bomb b = bp.GetBomb();
                     b.initBomb(player.getX() + spriteWidth / 2, player.getY()
                             + spriteHeight / 2, 15);
                 }
+                if ((keyStates & FIRE_PRESSED) != 0) {
+                    for (int i = 0; i < d.length; i++) {
+                        if (player.collidesWith(d[i])) {
+                            d[i].setVisible(false);
+                            if (i == winDigit) {
+                                running = false;
+                                winner.setVisible(true);
+                                winner.setPosition(player.getX(), player.getY());
+                            } else {
+                                wrongCnt++;
+                                if (wrongCnt == 3) {
+                                    player.kill();
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+
                 bp.tickAllTaken();
 
                 boolean movePlayer = true;
 
-                int halfW = getWidth() / 2;
-                int halfH = getHeight() / 2;
                 int dx1 = 0;
                 int dy1 = 0;
-                if ((player.getX() > halfW
-                        && (direction == RIGHT && backgroundLayer.getWidth()
-                        - player.getX() + backgroundLayer.getX() > halfW) || (player.getX() < halfW && direction == LEFT && (player.getX() - backgroundLayer.getX()) > halfW))) {
-                    moveBckGrnd(-dx, 0);
-                    movePlayer = false;
+                if (moveScreen()) {
+                    moveBckGrnd(-dx, -dy);
                     dx1 = -dx;
-                    dy1 = 0;
-                } else if ((player.getY() > halfH
-                        && (direction == UP && backgroundLayer.getHeight()
-                        - player.getY() + backgroundLayer.getY() > halfH) || (player.getY() < halfH && direction == DOWN && (player.getY() - backgroundLayer.getY()) > halfH))) {
-                    moveBckGrnd(0, -dy);
-                    dx1 = 0;
                     dy1 = -dy;
                     movePlayer = false;
                 }
-                mobCnt++;
 
+                mobCnt++;
+                System.out.println(mobSlowness);
                 if (mobCnt % mobSlowness == 0) {
                     for (int i = 0; i < mobs.length; i++) {
                         mobs[i].move();
@@ -172,7 +200,7 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                 for (int i = 0; i < mobs.length; i++) {
                     if (mobs[i].getMonster().isVisible()
                             && player.collidesWith(mobs[i].getMonster())) {
-                        player.die();
+                        player.kill();
                         dead = true;
                     }
                 }
@@ -189,16 +217,33 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
             flushGraphics();
 
             try {
+                if (!running) {
+                    Thread.sleep(2000);
+                    main.nextLevel(lev);
+                }
                 Thread.sleep(5);
-            } catch (InterruptedException ie) {
+
+            } catch (Exception ie) {
+                ie.printStackTrace();
             }
         }
     }
-    int score, spirit, winDigit;
+
+    boolean moveScreen() {
+        int halfW = getWidth() / 2;
+        int halfH = getHeight() / 2;
+        return ((player.getX() > halfW
+                && (direction == RIGHT && backgroundLayer.getWidth()
+                - player.getX() + backgroundLayer.getX() > halfW) || (player.getX() < halfW && direction == LEFT && (player.getX() - backgroundLayer.getX()) > halfW)))
+                || ((player.getY() > halfH
+                && (direction == UP && backgroundLayer.getHeight()
+                - player.getY() + backgroundLayer.getY() > halfH) || (player.getY() < halfH && direction == DOWN && (player.getY() - backgroundLayer.getY()) > halfH)));
+    }
+    static int score, spirit, winDigit;
     String eq;
 
     void generateEquation() {
-        Random r = new Random(1L << 60);
+        Random r = new Random(System.currentTimeMillis());
         int d1 = r.nextInt(10), d2 = r.nextInt(10), d3 = r.nextInt(10), d4 = r.nextInt(10);
         while (d1 == 0) {
             d1 = r.nextInt(10);
@@ -236,7 +281,11 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
         for (int i = 0; i < mobs.length; i++) {
             mobs[i].move(dx, dy);
         }
+        for (int i = 0; i < d.length; i++) {
+            d[i].setPosition(d[i].getX() + dx, d[i].getY() + dy);
+        }
         bp.moveAll(dx, dy);
+
     }
 
     private void setHeader(Graphics g) {
@@ -245,5 +294,54 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
         g.setColor(165, 176, 100);
         g.setFont(Font.getFont(Font.FACE_MONOSPACE, Font.STYLE_BOLD | Font.STYLE_UNDERLINED | Font.STYLE_ITALIC, Font.SIZE_LARGE));
         g.drawString("SC:" + score + " " + eq + " " + "SP:" + spirit, 0, 0, 0);
+    }
+
+    private void addDigits() {
+        try {
+            d = new Digits[10];
+            for (int i = 0; i < d.length; i++) {
+
+                d[i] = new Digits(i);
+                layerManager.append(d[i]);
+            }
+
+            int[][] map = backgroundLayer.map;
+            int cnt = 0;
+            Vector v = new Vector();
+            for (int i = 0; i < map.length; i++) {
+                for (int j = 0; j < map[0].length; j++) {
+                    if (map[i][j] == Map.breakable) {
+                        v.addElement(new pair(i * backgroundLayer.getCellHeight(), j * backgroundLayer.getCellWidth()));
+                    }
+                }
+            }
+
+            int randomize[] = new int[v.size()];
+            for (int i = 0; i < randomize.length; i++) {
+                randomize[i] = i;
+            }
+            Random r = new Random(System.currentTimeMillis());
+            for (int i = 0; i < randomize.length; i++) {
+                int ii = i + r.nextInt(randomize.length - i);
+                int tmp = randomize[i];
+                randomize[i] = randomize[ii];
+                randomize[ii] = tmp;
+            }
+            for (int i = 0; i < d.length; i++) {
+                d[i].setPosition(((pair) v.elementAt(randomize[i])).x + 5, ((pair) v.elementAt(randomize[i])).y + 5);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+
+class pair {
+
+    int x, y;
+
+    public pair(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }

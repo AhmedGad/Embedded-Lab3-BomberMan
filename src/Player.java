@@ -7,17 +7,17 @@ public class Player {
 
     private Character player;
 
-    public Player() {
+    public Player(int lev) {
         Image images[] = new Image[4];
         try {
-            images[0] = Image.createImage("/1.png");
-            images[1] = Image.createImage("/2.png");
-            images[2] = Image.createImage("/3.png");
-            images[3] = Image.createImage("/4.png");
+            images[0] = Image.createImage("/" + lev + "1.png");
+            images[1] = Image.createImage("/" + lev + "2.png");
+            images[2] = Image.createImage("/" + lev + "3.png");
+            images[3] = Image.createImage("/" + lev + "4.png");
         } catch (Exception ioe) {
             System.out.println("unable to load image");
         }
-        int framesPerImage = 10;
+        int framesPerImage = 3;
         int frameSpeed = 5;
         int seq[] = new int[frameSpeed * framesPerImage];
         for (int i = 0; i < seq.length; i++) {
@@ -80,10 +80,15 @@ public class Player {
     boolean dead;
     int deadCnt;
 
-    void die() {
+    void kill() {
         try {
             dead = true;
             player.setImage(Image.createImage("/dead.png"), 30, 30);
+            int seq[] = new int[9];
+            for (int i = 0; i < 9; i++) {
+                seq[i] = i;
+            }
+            player.setFrameSequence(seq);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

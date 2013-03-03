@@ -1,4 +1,5 @@
 
+import java.io.IOException;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Display;
@@ -10,15 +11,15 @@ public class Main extends MIDlet implements CommandListener {
     public Main() {
     }
     Command restart;
+    int currentLevel = 1;
 
     public void startApp() {
-        restart = new Command("restart", Command.SCREEN, 0);
-
-        MainGameCanvas myCanvas = new MainGameCanvas(3);
-        myCanvas.addCommand(restart);
-        myCanvas.setCommandListener(this);
-        Display.getDisplay(this).setCurrent(myCanvas);
-        myCanvas.start();
+        try {
+            restart = new Command("restart", Command.SCREEN, 0);
+            nextLevel(0);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void pauseApp() {
@@ -28,10 +29,26 @@ public class Main extends MIDlet implements CommandListener {
     }
 
     public void commandAction(Command c, Displayable d) {
-        MainGameCanvas myCanvas = new MainGameCanvas(3);
-        myCanvas.addCommand(restart);
-        myCanvas.setCommandListener(this);
-        Display.getDisplay(this).setCurrent(myCanvas);
-        myCanvas.start();
+        try {
+            nextLevel(0);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    MainGameCanvas myCanvas;
+
+    public void nextLevel(int lev) throws IOException {
+        if (lev < 3) {
+            if (myCanvas != null) {
+                myCanvas.running = false;
+            }
+            lev++;
+            myCanvas = new MainGameCanvas(lev);
+            myCanvas.main = this;
+            myCanvas.addCommand(restart);
+            myCanvas.setCommandListener(this);
+            Display.getDisplay(this).setCurrent(myCanvas);
+            myCanvas.start();
+        }
     }
 }

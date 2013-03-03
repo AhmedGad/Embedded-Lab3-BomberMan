@@ -78,10 +78,11 @@ public class Bomb {
 				for (int j = 0; j < mobs.length; j++) {
 					if (mobs[j].getMonster().collidesWith(bomb[i + 1])) {
 						mobs[j].getMonster().setVisible(false);
+                                                MainGameCanvas.score+=100;
 					}
 				}
 				if (MainGameCanvas.player.collidesWith(bomb[i + 1]))
-					MainGameCanvas.player.die();
+					MainGameCanvas.player.kill();
 			} else {
 				bomb[i + 1].setVisible(false);
 			}
@@ -92,7 +93,7 @@ public class Bomb {
 			}
 		}
 		if (MainGameCanvas.player.collidesWith(bomb[0]))
-			MainGameCanvas.player.die();
+			MainGameCanvas.player.kill();
 	}
 
 	boolean done;
