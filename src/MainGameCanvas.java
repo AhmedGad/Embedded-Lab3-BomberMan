@@ -102,10 +102,9 @@ public class MainGameCanvas extends GameCanvas implements Runnable {
                     direction = UP;
                 }
                 cnt++;
-                if ((keyStates & GAME_A_PRESSED) != 0 && bp.canGetBomb()
-                        && cnt % 4 == 0) {
-                    System.out.println("!!!!");
-                    cnt = 0;
+                if ((keyStates & GAME_A_PRESSED) != 0
+                        && bp.canGetBomb(player.getX(), player.getY())) {
+                    System.out.println("X");
                     Bomb b = bp.GetBomb();
                     b.initBomb(player.getX() + spriteWidth / 2, player.getY()
                             + spriteHeight / 2, 15);
