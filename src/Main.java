@@ -7,7 +7,7 @@ public class Main extends MIDlet {
 	}
 
 	public void startApp() {
-		MainGameCanvas myCanvas = new MainGameCanvas(1);
+		MainGameCanvas myCanvas = new MainGameCanvas(2);
 		Display.getDisplay(this).setCurrent(myCanvas);
 		myCanvas.start();
 	}

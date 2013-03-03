@@ -67,8 +67,8 @@ public class Bomb {
 		int px = (xi - sx) / 30;
 		int py = (yi - sy) / 30;
 
-		System.out.println(bomb[0].getX());
-		System.out.println(MainGameCanvas.backgroundLayer.getX());
+//		System.out.println(bomb[0].getX());
+//		System.out.println(MainGameCanvas.backgroundLayer.getX());
 
 		for (int i = 0; i < 4; i++) {
 			int nx = px + dx[i];

@@ -12,12 +12,13 @@ public class BombPool {
 	}
 
 	public boolean canGetBomb() {
+		System.out.println(available);
 		return available > 0;
 	}
 
 	public Bomb GetBomb() {
 		for (int i = 0; i < pool.length; i++) {
-			if (taken[i] == false) {
+			if (!taken[i]) {
 				taken[i] = true;
 				available--;
 				return pool[i];
@@ -33,13 +34,10 @@ public class BombPool {
 
 	}
 
-	public void release(Bomb b) {
+	public void release() {
 		for (int i = 0; i < pool.length; i++) {
-			if (taken[i]) {
-				taken[i] = false;
-				available++;
-				pool[i] = b;
-			}
+			taken[i] = false;
+			available++;
 		}
 	}
 
