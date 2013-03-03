@@ -31,10 +31,14 @@ public class Bomb {
 			bomb[i].setFrameSequence(seq2);
 		}
 	}
-	private int xi,yi;
+
+	private int xi, yi, sx, sy;
+
 	public void initBomb(int x, int y, int time) {
 		this.time = time;
-		bomb[0].setPosition(30 * ((xi=x) / 30) , 30 * ((yi=y) / 30));
+		sx = MainGameCanvas.backgroundLayer.getX();
+		sy = MainGameCanvas.backgroundLayer.getY();
+		bomb[0].setPosition(30 * ((xi = x) / 30), 30 * ((yi = y) / 30));
 		bomb[0].setVisible(true);
 		bomb[0].setImage(imgs[0], spriteWidth, spriteHeight);
 		active = true;
@@ -60,12 +64,12 @@ public class Bomb {
 		}
 		bomb[0].setImage(imgs[1], 30, 30);
 		bomb[0].setFrameSequence(seq2);
-		int px = (xi - MainGameCanvas.backgroundLayer.getX()) / 30;
-		int py = (yi- MainGameCanvas.backgroundLayer.getY()) / 30;
-		
+		int px = (xi - sx) / 30;
+		int py = (yi - sy) / 30;
+
 		System.out.println(bomb[0].getX());
 		System.out.println(MainGameCanvas.backgroundLayer.getX());
-		
+
 		for (int i = 0; i < 4; i++) {
 			int nx = px + dx[i];
 			int ny = py + dy[i];
