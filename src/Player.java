@@ -1,4 +1,5 @@
 
+import java.io.IOException;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.game.Layer;
 
@@ -28,6 +29,9 @@ public class Player {
         player = new Character(images, seq, spriteWidth, spriteHeight, 35, 35);
 
         player.defineCollisionRectangle(5, spriteHeight / 2, spriteWidth - 10, spriteHeight / 2);
+
+        dead = false;
+        deadCnt = 0;
     }
 
     public Character getPlayer() {
@@ -35,11 +39,15 @@ public class Player {
     }
 
     public void moveWith(int dx, int dy) {
-        player.moveWith(dx, dy);
+        if (!dead) {
+            player.moveWith(dx, dy);
+        }
     }
 
     public void changeDirection(int direction) {
-        player.changeDirection(direction);
+        if (!dead) {
+            player.changeDirection(direction);
+        }
     }
 
     public boolean collidesWith(Layer obj) {
@@ -54,7 +62,30 @@ public class Player {
         return player.getX();
     }
 
+    public void callIfDie() {
+        if (player.getFrame() < 8) {
+            deadCnt++;
+            System.out.println(deadCnt);
+            if (deadCnt % 50 == 0) {
+                player.nextFrame();
+            }
+        } else {
+            player.setVisible(false);
+        }
+    }
+
     public int getY() {
         return player.getY();
+    }
+    boolean dead;
+    int deadCnt;
+
+    void die() {
+        try {
+            dead = true;
+            player.setImage(Image.createImage("/dead.png"), 30, 30);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
