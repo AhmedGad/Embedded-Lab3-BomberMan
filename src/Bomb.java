@@ -5,7 +5,7 @@ import javax.microedition.lcdui.game.Sprite;
 
 public class Bomb {
 
-	private int x, y, time; // time is the number of cycles (Thread sleeps)
+	private int time; // time is the number of cycles (Thread sleeps)
 	private int cyclesPerImage = 10;
 	private int cntCycles = 0;
 	private Sprite[] bomb = new Sprite[5];
@@ -31,12 +31,10 @@ public class Bomb {
 			bomb[i].setFrameSequence(seq2);
 		}
 	}
-
+	private int xi,yi;
 	public void initBomb(int x, int y, int time) {
-		this.x = 30 * (x / 30) + 5;
-		this.y = 30 * (y / 30) + 2;
 		this.time = time;
-		bomb[0].setPosition(this.x, this.y);
+		bomb[0].setPosition(30 * ((xi=x) / 30) , 30 * ((yi=y) / 30));
 		bomb[0].setVisible(true);
 		bomb[0].setImage(imgs[0], spriteWidth, spriteHeight);
 		active = true;
@@ -44,7 +42,7 @@ public class Bomb {
 	}
 
 	public void move(int dx, int dy) {
-		for(int i = 0 ; i < 5 ; i ++)
+		for (int i = 0; i < 5; i++)
 			bomb[i].move(dx, dy);
 	}
 
@@ -62,13 +60,18 @@ public class Bomb {
 		}
 		bomb[0].setImage(imgs[1], 30, 30);
 		bomb[0].setFrameSequence(seq2);
-		int px = x / 30;
-		int py = y / 30;
+		int px = (xi - MainGameCanvas.backgroundLayer.getX()) / 30;
+		int py = (yi- MainGameCanvas.backgroundLayer.getY()) / 30;
+		
+		System.out.println(bomb[0].getX());
+		System.out.println(MainGameCanvas.backgroundLayer.getX());
+		
 		for (int i = 0; i < 4; i++) {
 			int nx = px + dx[i];
 			int ny = py + dy[i];
 			if (MainGameCanvas.backgroundLayer.clearCell(nx, ny)) {
-				bomb[1 + i].setPosition(nx * 30, ny * 30);
+				bomb[1 + i].setPosition(bomb[0].getX() + dx[i] * 30,
+						bomb[0].getY() + dy[i] * 30);
 			} else {
 				bomb[1 + i].setVisible(false);
 			}

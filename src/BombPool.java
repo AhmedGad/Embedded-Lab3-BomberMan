@@ -26,6 +26,13 @@ public class BombPool {
 		return null;
 	}
 
+	public void moveAll(int dx, int dy) {
+		for (int i = 0; i < pool.length; i++)
+			if (taken[i])
+				pool[i].move(dx, dy);
+
+	}
+
 	public void release(Bomb b) {
 		for (int i = 0; i < pool.length; i++) {
 			if (taken[i]) {
